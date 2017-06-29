@@ -174,14 +174,14 @@ subroutine pathint_init(ring_polymer, centroid_cell, centroid_md)
     call pathint_rescale_masses(ring_polymer, 'backward')
     call pathint_bead_neighbour_interactions(ring_polymer)
   end if
- 
+
   ! zero net force for each replica..
   do ibead = 1, ring_polymer%nbeads
     if (ring_polymer%beads(ibead)%md%fix_com) then
       call md_zero_net_force(ring_polymer%beads(ibead)%md, ring_polymer%beads(ibead)%cell)
     end if
   end do
-  
+
   ! which masses do we need here? physical or rescaled? centroid mass = physical so won't matter too much..
   ! calc KE for each bead (not centroid, this is averaged from each bead)
   do ibead = 1, ring_polymer%nbeads
@@ -338,7 +338,7 @@ subroutine pathint_normal_modes_init(ring_polymer)
 
   allocate(ring_polymer%fftw_cmplx_in_n(ring_polymer%nbeads), stat=istat)
   if (istat .ne. 0) call io_err("pathint_normal_modes_init: Could not allocate fftw_cmplx_in_n array")
-  
+
   allocate(ring_polymer%fftw_cmplx_out_n(ring_polymer%nbeads), stat=istat)
   if (istat .ne. 0) call io_err("pathint_normal_modes_init: Could not allocate fftw_cmplx_out_n array")
 
@@ -358,7 +358,7 @@ subroutine pathint_normal_modes_init(ring_polymer)
   !
   ! 2. The eigenvalue of the (P)th mode is 4P.
   !
-  ! 3. The eigenvalues of the (2I-2)th and the (2I-1)th modes are 
+  ! 3. The eigenvalues of the (2I-2)th and the (2I-1)th modes are
   !     4P[1-cos(2pi[I-1]/P)]
   !-----------------------------------------------------------------------------
 
@@ -411,7 +411,7 @@ subroutine pathint_normal_modes_pos_forward(ring_polymer)
       ! 3. Set the value of the (1)st mode (the centroid position) equal to the
       !      real part of the (1)st element of the transformed vector.
       !
-      ! 4. Set the value of the Pth mode equal to the real part of the 
+      ! 4. Set the value of the Pth mode equal to the real part of the
       !      (P/2 + 1)st element of the transformed vector.
       !
       ! 5. Set the value of the (2I-2)th mode equal to the real part of the
@@ -448,10 +448,10 @@ subroutine pathint_normal_modes_pos_forward(ring_polymer)
       ! copy everything back into real array
       ! step 3 & 4:
       ring_polymer%fftw_real_n(1) = real(ring_polymer%fftw_cmplx_out_no2p1(1),dp)
-      ring_polymer%fftw_real_n(nbeads) = real(ring_polymer%fftw_cmplx_out_no2p1(cn),dp)   ! cn = nbeads/2 + 1 
+      ring_polymer%fftw_real_n(nbeads) = real(ring_polymer%fftw_cmplx_out_no2p1(cn),dp)   ! cn = nbeads/2 + 1
 
       ! step 5 & 6:
-      do i = 2, (nbeads/2) 
+      do i = 2, (nbeads/2)
         ! step 5:
         ring_polymer%fftw_real_n(2*i-2) = real(ring_polymer%fftw_cmplx_out_no2p1(i),dp)
         ! step 6:
@@ -617,10 +617,10 @@ subroutine pathint_normal_modes_force_forward(ring_polymer)
       ! cvec should now contain everything we need..
       ! step 4 & 5:
       ring_polymer%fftw_real_n(1) = real(ring_polymer%fftw_cmplx_out_no2p1(1),dp)
-      ring_polymer%fftw_real_n(nbeads) = real(ring_polymer%fftw_cmplx_out_no2p1(cn),dp)   ! cn = nbeads/2 + 1 
+      ring_polymer%fftw_real_n(nbeads) = real(ring_polymer%fftw_cmplx_out_no2p1(cn),dp)   ! cn = nbeads/2 + 1
       ! step 6 is redundant (same as step 4)
 
-      do i = 2, (nbeads/2) 
+      do i = 2, (nbeads/2)
         ! step 7:
         ring_polymer%fftw_real_n(2*i-2) = 2.0_dp*real(ring_polymer%fftw_cmplx_out_no2p1(i),dp)
         ! step 8:
@@ -1121,7 +1121,7 @@ subroutine pathint_calc_estimators(ring_polymer, centroid_cell, centroid_md)
       ring_polymer%primitive_energy_est = ring_polymer%primitive_energy_est &
       & -ring_polymer%beads(ibead)%cell%atom_mass(iatom)*dot_product(curr_next, curr_next)
 
-      
+
       ! sum: (r_i_k - r_i_centroid) . dU/dr_i_k  =  sum: -(r_i_k - r_i_centroid) . F_i_k
       ring_polymer%virial_energy_est = ring_polymer%virial_energy_est &
       & - dot_product(curr_centroid, ring_polymer%beads(ibead)%md%force(:,iatom))
@@ -1217,7 +1217,7 @@ subroutine pathint_deallocate(ring_polymer)
     deallocate(ring_polymer%beads_langevin_force, stat=istat)
     if (istat .ne. 0) call io_err("pathint_deallocate: Could not deallocate beads_langevin_force array")
   end if
-  
+
   do ibead = 1, ring_polymer%nbeads
     call cell_deallocate(ring_polymer%beads(ibead)%cell)
     call md_deallocate(ring_polymer%beads(ibead)%md)
@@ -1336,7 +1336,7 @@ end subroutine pathint_continuation
 
 subroutine pathint_write_checkpoint(ring_polymer, centroid_cell, centroid_md)
   use checkpoint, only: checkpoint_open, checkpoint_unit, checkpoint_close
-  use cell,       only: cell_write_checkpoint 
+  use cell,       only: cell_write_checkpoint
   use md,         only: md_type_write_checkpoint
   use algor,      only: rand_seed
   implicit none

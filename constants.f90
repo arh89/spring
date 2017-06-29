@@ -135,7 +135,7 @@ function element_symbol_to_z(symbol)
 
   call io_str_to_ucase(str(1:1))  ! first character always uppercase
 
-  do ielement = 1, nelements 
+  do ielement = 1, nelements
     if (str .eq. element_symbol(ielement)) then
       element_symbol_to_z = ielement
       exit

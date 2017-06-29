@@ -13,7 +13,7 @@ module md
   real(kind=dp),      parameter   ::  default_timestep = 1.0_dp
   character(len=3),   parameter   ::  default_ensemble = 'nve'
   character(len=20),  parameter   ::  default_thermostat = 'langevin'
-  real(kind=dp),      parameter   ::  default_temperature = 300.0_dp 
+  real(kind=dp),      parameter   ::  default_temperature = 300.0_dp
   real(kind=dp),      parameter   ::  default_langevin_time = 100.0_dp
   character(len=6),   parameter   ::  default_trajectory_units = 'atomic'
   integer,            parameter   ::  default_output_interval = 1
@@ -24,8 +24,8 @@ module md
     character(len=6)        ::  trajectory_units          ! 'atomic' or 'user'
 
     integer                 ::  timestep
-    integer                 ::  ntimesteps 
-    integer                 ::  ndof 
+    integer                 ::  ntimesteps
+    integer                 ::  ndof
     real(kind=dp)           ::  dt
     real(kind=dp)           ::  kinetic_energy
     real(kind=dp)           ::  potential_energy
@@ -65,7 +65,7 @@ module md
   public  ::  md_continuation
   public  ::  md_type_read_checkpoint
   public  ::  md_type_write_checkpoint
-  
+
 contains
 
 subroutine md_init(md, cell)
@@ -89,7 +89,7 @@ subroutine md_init(md, cell)
 
   ! overwrite values by user - check for errors
   call md_read_input(md)
-  
+
   ! now subtract 3 if linear momentum of COM is fixed (zero)
   if (md%fix_com) md%ndof = md%ndof - 3
   ! sanity check
@@ -186,7 +186,7 @@ subroutine md_continuation(md, cell, close_checkpoint)
 
   ! overwrite values by user - check for errors
   call md_read_input(tmp_md)
-  
+
   ! now subtract 3 if linear momentum of COM is fixed (zero)
   if (tmp_md%fix_com) tmp_md%ndof = tmp_md%ndof - 3
   ! sanity check
@@ -612,11 +612,11 @@ subroutine md_sync_coords(md, cell)
   implicit none
   type(md_type),    intent(in)    ::  md
   type(cell_type),  intent(inout) ::  cell
-  
+
   ! potentially slow because of copy
   ! (could instead create new cell routines which take in position array...)
   cell%atom_cart_pos(:,:) = md%pos(:,:)
-  
+
   call cell_cart_to_frac(cell)        ! update fractionals
   call cell_shift_to_unit_cell(cell)  ! apply PBCs (only works on fractionals)
   call cell_frac_to_cart(cell)        ! update Cartesian after PBCs from corrected fractionals
@@ -659,7 +659,7 @@ subroutine md_langevin_force(md, cell)
   type(cell_type),  intent(in)    ::  cell
   real(kind=dp) ::  langevin_gamma, sqrt_mass
   integer ::  iatom, j
-  
+
   langevin_gamma = 1.0_dp/md%langevin_time
 
   do iatom = 1, cell%natoms
@@ -668,7 +668,7 @@ subroutine md_langevin_force(md, cell)
       ! F = F - gamma*mv + sqrt(2mkT/(tau*dt))*N(0,1)
       md%force(j,iatom) = md%force(j,iatom) - langevin_gamma*md%momentum(j,iatom) &
       &                   + sqrt_mass*algor_gauss_rand(mean=0.0_dp, stddev=md%langevin_noise_stddev)
-      
+
       ! correct for only having v(t + dt/2) multiplying by 1/(1 + gamma*dt/2)
       md%force(j,iatom) = md%langevin_force_correction*md%force(j,iatom)
     end do
@@ -680,7 +680,7 @@ subroutine md_calc_kinetic_energy(md, cell)
   type(md_type),    intent(inout) ::  md
   type(cell_type),  intent(in)    ::  cell
   integer ::  iatom
-  
+
   md%kinetic_energy = 0.0_dp
   do iatom = 1, cell%natoms
     md%kinetic_energy = md%kinetic_energy + 0.5_dp*dot_product(md%momentum(:,iatom), md%momentum(:,iatom))/cell%atom_mass(iatom)
@@ -696,9 +696,9 @@ subroutine  md_write_output(md, cell)
   real(kind=dp) ::  tot_energy
   integer ::  i, output_unit_num
 
-  if (md%timestep .eq. 0) then 
+  if (md%timestep .eq. 0) then
     call io_open_file(md%output_filename, output_unit_num, 'replace')
-    write (output_unit_num, 99) 'BEGIN header' 
+    write (output_unit_num, 99) 'BEGIN header'
     write (output_unit_num, *)   cell%natoms, md%ntimesteps+1
     write (output_unit_num, 99) 'END header'
     write (output_unit_num, *)  ' '
@@ -719,7 +719,7 @@ subroutine  md_write_output(md, cell)
     do i = 1, 3
       write (output_unit_num, 4) units(length=cell%lattice_vectors(:,i))
     end do
-    
+
     ! positions
     do i = 1, cell%natoms
       write (output_unit_num, 5) element_symbol(cell%atom_species(i)), i, units(length=md%pos(:,i))
@@ -734,7 +734,7 @@ subroutine  md_write_output(md, cell)
     do i = 1, cell%natoms
       write (output_unit_num, 7) element_symbol(cell%atom_species(i)), i, units(force=md%force(:,i))
     end do
-  
+
 
   ! atomic units - no change
   else
@@ -746,7 +746,7 @@ subroutine  md_write_output(md, cell)
     do i = 1, 3
       write (output_unit_num, 4) cell%lattice_vectors(:,i)
     end do
-    
+
     ! positions
     do i = 1, cell%natoms
       write (output_unit_num, 5) element_symbol(cell%atom_species(i)), i, md%pos(:,i)

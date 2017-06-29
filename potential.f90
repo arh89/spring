@@ -1,4 +1,4 @@
-module potential 
+module potential
   use constants,  only: dp
   use cell,       only: cell_type
   implicit none
@@ -30,7 +30,7 @@ subroutine pot_init(cell)
   real(kind=dp) ::  ev_to_hartree, ang_to_bohr, atomic_time_to_fs
 
   call pot_read_input
-  
+
   ! check we have correct potential, call initialization routines if necessary
   select case (potential_type)
     case ('lj')
@@ -75,9 +75,9 @@ subroutine pot_read_input
     if (kw_found) then
       if (size(values,1) .ne. 1) call io_err("pot_init: harmonic_spring_const must be a single line")
 
-      ntokens = io_str_get_num_tokens(values(1)) 
+      ntokens = io_str_get_num_tokens(values(1))
       if (ntokens .eq. 1) then
-        harmonic_spring(:) = io_str_to_real(values(1)) 
+        harmonic_spring(:) = io_str_to_real(values(1))
       else if (ntokens .eq. 3) then
         read(unit=values(1), fmt=*, iostat=istat) harmonic_spring(1), harmonic_spring(2), harmonic_spring(3)
         if (istat .ne. 0) call io_err("pot_read_input: Could not read harmonic_spring_const")

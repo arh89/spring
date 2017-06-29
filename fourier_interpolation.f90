@@ -124,7 +124,7 @@ subroutine fourier_interpolation_read(keyword, interp)
   character(len=*),             intent(in)    ::  keyword
   type(interp_type),            intent(inout) ::  interp
 
-  character(len=max_line_len),  allocatable,  dimension(:)  ::  values 
+  character(len=max_line_len),  allocatable,  dimension(:)  ::  values
   character(len=max_line_len) ::  str
   character(len=10)           ::  line_num_str            ! any possible line num..
   logical                     ::  found
@@ -159,7 +159,7 @@ subroutine fourier_interpolation_read(keyword, interp)
 
   ! must have at least two lines
   if (nlines .lt. 2) call io_err("fourier_interpolation_read: "//trim(keyword)//" block must be >= 2 lines long")
-  
+
   ! check first line has correct number of tokens (1 for 1D,   2 for 2D)
   interp%ndims = io_str_get_num_tokens(values(1))
   if ((interp%ndims .ne. 1) .and. (interp%ndims .ne. 2))  &
@@ -169,7 +169,7 @@ subroutine fourier_interpolation_read(keyword, interp)
   if (interp%ndims .eq. 1) then
     read(values(1), *, iostat=istat) interp%grid_size(1)
     interp%grid_size(2) = 1
-  else 
+  else
     ! interp%ndims .eq. 2
     read(values(1), *, iostat=istat) interp%grid_size(1), interp%grid_size(2)
   end if
@@ -193,7 +193,7 @@ subroutine fourier_interpolation_read(keyword, interp)
     if (istat .ne. 0) call io_err("fourier_interpolation_read: Could not store line number string")
     line_num_str = adjustl(line_num_str)  ! remove lhs padding
 
-    if (io_str_get_num_tokens(values(iline)) .ne. interp%ndims+1) then 
+    if (io_str_get_num_tokens(values(iline)) .ne. interp%ndims+1) then
       call io_err("fourier_interpolation_read: line "//trim(line_num_str) &
                   & //" in "//trim(keyword)//" block must have ndims+1 values")
     end if
@@ -237,8 +237,8 @@ subroutine dft_forward_1d(rinput, coutput)
   if (size(rinput,1) .ne. size(coutput,1)) call io_err("dft_forward_1d: Size of two arrays should match")
 
   nelements = size(rinput,1)
-  
-  coutput(:) = cmplx(0.0_dp, 0.0_dp, dp) 
+
+  coutput(:) = cmplx(0.0_dp, 0.0_dp, dp)
 
   do n = 0, nelements-1
     do k = 0, nelements-1
@@ -264,12 +264,12 @@ subroutine dft_forward_2d(rinput, coutput)
 
   nelements1 = size(rinput,1)
   nelements2 = size(rinput,2)
-  
-  coutput(:,:) = cmplx(0.0_dp, 0.0_dp, dp) 
+
+  coutput(:,:) = cmplx(0.0_dp, 0.0_dp, dp)
 
   do n2 = 0, nelements2-1
     do n1 = 0, nelements1-1
-    
+
       do k2 = 0, nelements2-1
         contrib = exp( (two_pi*real(k2*n2,dp)/real(nelements2,dp)) * cmplx_i )
 
@@ -297,9 +297,9 @@ subroutine dft_backward_1d(cinput, routput)
   if (size(cinput,1) .ne. size(routput,1)) call io_err("dft_backward_1d: Size of two arrays should match")
 
   nelements = size(cinput,1)
-  
+
   do k = 0, nelements-1
-    coutput = cmplx(0.0_dp, 0.0_dp, dp) 
+    coutput = cmplx(0.0_dp, 0.0_dp, dp)
 
     do n = 0, nelements-1
       coutput = coutput + cinput(n) * exp( (-two_pi*real(k*n,dp)/real(nelements,dp)) * cmplx_i )
@@ -327,12 +327,12 @@ subroutine dft_backward_2d(cinput, routput)
 
   nelements1 = size(cinput,1)
   nelements2 = size(cinput,2)
-  
+
 
   do k2 = 0, nelements2-1
     do k1 = 0, nelements1-1
-      coutput = cmplx(0.0_dp, 0.0_dp, dp) 
-    
+      coutput = cmplx(0.0_dp, 0.0_dp, dp)
+
       do n2 = 0, nelements2-1
         contrib = exp( (-two_pi*real(k2*n2,dp)/real(nelements2,dp)) * cmplx_i )
 
@@ -415,7 +415,7 @@ subroutine fourier_interp_pot_1d(cinput, pos, routput, rgrad)
   ! second half of n
   do n = nelements/2+1, nelements-1
     component = cinput(n)*exp(-two_pi*real(n-nelements,dp)*pos*cmplx_i)
-    coutput = coutput + component 
+    coutput = coutput + component
     cgrad = cgrad + component*real(n-nelements,dp)
   end do
 
@@ -463,7 +463,7 @@ subroutine fourier_interp_pot_2d(cinput, pos, routput, rgrad)
     ! second half of n2
     do n1 = nelements1/2+1, nelements1-1
       component = cinput(n1,n2)*exp(-two_pi*real(n1-nelements1,dp)*pos(1)*cmplx_i)*contrib
-      coutput = coutput + component 
+      coutput = coutput + component
       cgrad(1) = cgrad(1) + component*real(n1-nelements1,dp)
       cgrad(2) = cgrad(2) + component*real(n2,dp)
     end do !n1
@@ -485,7 +485,7 @@ subroutine fourier_interp_pot_2d(cinput, pos, routput, rgrad)
     ! second half of n2
     do n1 = nelements1/2+1, nelements1-1
       component = cinput(n1,n2)*exp(-two_pi*real(n1-nelements1,dp)*pos(1)*cmplx_i)*contrib
-      coutput = coutput + component 
+      coutput = coutput + component
       cgrad(1) = cgrad(1) + component*real(n1-nelements1,dp)
       cgrad(2) = cgrad(2) + component*real(n2-nelements2,dp)
     end do !n1

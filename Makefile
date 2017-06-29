@@ -2,7 +2,7 @@ FC      = gfortran
 FCFLAGS = -O3 -fopenmp
 LIBS = -lopenblas -lfftw3
 
-vpath %.f90 . 
+vpath %.f90 .
 
 all: main
 
@@ -12,7 +12,7 @@ algor.o: constants.o hash.o io.o
 
 cell.o: constants.o io.o algor.o checkpoint.o
 
-checkpoint.o:	io.o
+checkpoint.o: io.o
 
 constants.o: io.o
 

@@ -82,7 +82,7 @@ subroutine do_singlepoint(cell)
   real(kind=dp) ::  energy, max_abs_f_comp, max_abs_s_comp
   integer ::  iatom, icomp, jcomp, istat
 
-  
+
   if (calc_forces) then
     call pot_get_forces(cell, forces, energy)
     forces(:,:) = units_atomic_to_natural(force=forces(:,:))
@@ -90,7 +90,7 @@ subroutine do_singlepoint(cell)
   else
     call pot_get_potential(cell, energy)
   end if
-  
+
   energy = units_atomic_to_natural(energy=energy)
 
   write(stdout, *, iostat=istat) "Total energy:", energy
@@ -98,14 +98,14 @@ subroutine do_singlepoint(cell)
 
   write(stdout, *, iostat=istat) "Energy per atom:", energy/real(cell%natoms,dp)
   if (istat .ne. 0) call io_err("do_singlepoint: Could not write to output")
-  
+
 
 
   if (calc_forces) then
     write(stdout, *, iostat=istat)
     if (istat .ne. 0) call io_err("do_singlepoint: Could not write to output")
 
-    write(stdout, *, iostat=istat) "Forces:" 
+    write(stdout, *, iostat=istat) "Forces:"
     if (istat .ne. 0) call io_err("do_singlepoint: Could not write to output")
 
     do iatom = 1, cell%natoms
@@ -143,9 +143,9 @@ subroutine do_singlepoint(cell)
       end do
     end do
 
-    write(stdout, *, iostat=istat) 'Max |S| comp:', max_abs_s_comp 
+    write(stdout, *, iostat=istat) 'Max |S| comp:', max_abs_s_comp
     if (istat .ne. 0) call io_err("do_singlepoint: Could not write to output")
   end if
 end subroutine do_singlepoint
 
-end module singlepoint 
+end module singlepoint

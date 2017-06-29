@@ -31,7 +31,7 @@ program main
 
   ! was random_seed included in input file?
   rand_seed = io_query_keyword('random_seed')
-  if (rand_seed .eq. 0) then 
+  if (rand_seed .eq. 0) then
     ! no.. call without initial seed
     call algor_init_rand()
   else if (rand_seed .eq. 1) then

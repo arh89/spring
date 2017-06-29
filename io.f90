@@ -142,7 +142,7 @@ subroutine io_init(stdout_action)
     end if
   end if
 end subroutine io_init
- 
+
 
 !****s* io/io_open_file =======================================================!
 ! NAME                                                                         !
@@ -151,7 +151,7 @@ end subroutine io_init
 ! ARGUMENTS                                                                    !
 !   character(len=*),           intent(in)  ::  filename                       !
 !   integer,                    intent(out) ::  unit_num                       !
-!                                                                              !    
+!                                                                              !
 !   character(len=*), optional, intent(in)  ::  file_action                    !
 !------------------------------------------------------------------------------!
 ! DESCRIPTION                                                                  !
@@ -259,7 +259,7 @@ recursive subroutine io_find_unit(unit_num)
 
   integer,  intent(out) ::  unit_num
 
-  integer,  parameter   ::  min_unit = 10, max_unit = 99 
+  integer,  parameter   ::  min_unit = 10, max_unit = 99
   integer               ::  iunit
   logical               ::  unit_exists, unit_open, success
 
@@ -276,7 +276,7 @@ recursive subroutine io_find_unit(unit_num)
     end if
   end do
 
-  if (.not. success) call io_err("io_find_unit: Could not open any file units") 
+  if (.not. success) call io_err("io_find_unit: Could not open any file units")
 end subroutine io_find_unit
 
 
@@ -303,7 +303,7 @@ recursive subroutine io_close_file(unit_num)
 
   ! check that both the unit exists and is opened:
   ! no point in giving error if unit doesn't exist/isn't open --
-  ! actually F95 standard says closing a unit that doesn't exist/isn't connected to a file is safe... 
+  ! actually F95 standard says closing a unit that doesn't exist/isn't connected to a file is safe...
   inquire(unit=unit_num, exist=unit_exists, opened=unit_open)
   if (unit_exists .and. unit_open) then
     close(unit_num, iostat=istat)
@@ -340,7 +340,7 @@ recursive subroutine io_err(string)
 
     ! err_unit_num could be a file, or stdout
     write(err_unit_num, *)  string
-    
+
     ! if we opened a file, then close it
     ! (doesn't actually matter if we close stdout, since this won't give an error and we're finished anyway)
     if (err_unit_num .ne. output_unit) call io_close_file(err_unit_num)
@@ -394,10 +394,10 @@ subroutine io_read_input_file(filename, table)
   call io_open_file(trim(filename), file_unit, 'read')
 
   ! allow table to expand if we have many collisions but don't shrink because we will be
-  ! removing (hopefully) all elements anyway (= lots of shrinking = expensive) 
+  ! removing (hopefully) all elements anyway (= lots of shrinking = expensive)
   ! and then destroying entire table when we're done
   call hash_table_init(table, nbuckets=16, can_expand=.true., can_shrink=.false.)
-  
+
   nlines = 0
   nblanklines = 0
   block_line_type = 'e' ! assume end of block unless we encounter one in the file
@@ -478,7 +478,7 @@ subroutine io_read_input_file(filename, table)
 
         ! store the block data:
         iblockdata = 1
-        do iblock = 1, nblocklines-1   ! we don't care about the last line (end block line) 
+        do iblock = 1, nblocklines-1   ! we don't care about the last line (end block line)
           read(file_unit, fmt=buffer_format, iostat=istat) line_str
           if (istat .ne. 0) call io_err("io_read_input_file: Error reading block data in "//trim(filename))
 
@@ -545,7 +545,7 @@ end subroutine io_read_input_file
 !   can continue as normal.                                                    !
 !==============================================================================!
 subroutine io_input_finalize
-  use iso_fortran_env,  only: output_unit 
+  use iso_fortran_env,  only: output_unit
   use hash_tables,      only: hash_table_size, hash_table_get_keywords, hash_table_destroy
   implicit none
 
@@ -577,7 +577,7 @@ subroutine io_input_finalize
 
     deallocate(keywords, stat=istat)
     if (istat .ne. 0) call io_err("io_input_finalize: Could not deallocate keyword array")
-    
+
     ! did io_err_initialize open a file?
     if (err_unit_num .ne. output_unit) call io_close_file(err_unit_num)
   end if
@@ -621,7 +621,7 @@ function io_query_keyword(keyword)
 
   ! although hash_table_query checks length of input, check it here so we can make use of io_err
   if (len_trim(keyword) .gt. max_line_len) call io_err("io_query_keyword: keyword too long")
-  
+
   io_query_keyword = hash_table_query(input_table, trim(keyword))
 end function io_query_keyword
 
@@ -984,7 +984,7 @@ function io_str_get_token(str, ntoken)
   integer ::  strlen
 
   strlen = len_trim(str)
-  
+
   ! assume we have shrunk the string..
   j = 0
 
@@ -1018,7 +1018,7 @@ subroutine io_str_to_lcase(str)
   character(len=26), parameter  ::  ucase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   integer :: i, imin, imax, ipos
   character(len=1) :: firstchar
-  
+
   strcopy = adjustl(str)
   firstchar = strcopy(1:1)
   imin = index(str, firstchar, back=.false.)
@@ -1050,7 +1050,7 @@ subroutine io_str_to_ucase(str)
   character(len=26), parameter  ::  ucase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   integer :: i, imin, imax, ipos
   character(len=1) :: firstchar
-  
+
   strcopy = adjustl(str)
   firstchar = strcopy(1:1)
   imin = index(str, firstchar, back=.false.)
@@ -1177,9 +1177,9 @@ end function io_str_to_logical
 !==============================================================================!
 subroutine io_err_initialize
   implicit none
-  
+
   err_in_use = .true. ! any errors from now will be treated differently (no stop)
-  
+
   ! if we have a seedname, open file (and change err_unit_num)
   if (len_trim(seedname) .gt. 0) then
     call io_open_file(trim(seedname)//error_file_extension, err_unit_num, 'append')
@@ -1192,7 +1192,7 @@ end subroutine io_err_initialize
 !   io_parse_store_str (PRIVATE)                                               !
 !------------------------------------------------------------------------------!
 ! ARGUMENTS                                                                    !
-!   character(len=*), intent(inout) ::  str                                    ! 
+!   character(len=*), intent(inout) ::  str                                    !
 !   type(hash_table), intent(inout) ::  table                                  !
 !------------------------------------------------------------------------------!
 ! DESCRIPTION                                                                  !

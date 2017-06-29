@@ -30,7 +30,7 @@ module cell
 
     real(kind=dp)                               ::  min_img_cutoff
   end type cell_type
-  
+
   ! cell independent min image vars:
   logical,  save                                ::  min_img_initialized = .false.
   integer,  save, dimension(3,27)               ::  min_img_c_vectors
@@ -292,7 +292,7 @@ subroutine cell_supercell(cell, supercell_a, supercell_b, supercell_c)
     cell%atom_mass(iatom) = tmp_atom_mass(iatom)
     cell%atom_species(iatom) = tmp_atom_species(iatom)
   end do
-  
+
   ! update rest of cell - order important
   call cell_calc_vol(cell)
   call cell_get_recip(cell)
@@ -351,7 +351,7 @@ subroutine cell_write(cell, suppress_output_file)
 !|          |               |          x             y             z      |         u             v             w       |
 !|   aaa    | ffffff.ffffff |  fffff.fffffff fffff.fffffff fffff.fffffff  |  fff.fffffffff fff.fffffffff fff.fffffffff  |
 !+----------+---------------+---------------------------------------------+---------------------------------------------+
-  
+
   out_unit = stdout
 
   if ((.not. present(suppress_output_file)) .or. (.not. suppress_output_file)) then
@@ -482,7 +482,7 @@ subroutine cell_allocate(cell)
   else
     call io_err("cell_allocate: cell%atom_cart_pos already allocated")
   end if
-    
+
   if (.not. allocated(cell%atom_species)) then
     allocate(cell%atom_species(cell%natoms), stat=istat)
     if (istat .ne. 0) call io_err("cell_allocate: Could not allocate cell%atom_species")
@@ -525,12 +525,12 @@ subroutine cell_deallocate(cell)
     deallocate(cell%atom_frac_pos, stat=istat)
     if (istat .ne. 0) call io_err("cell_deallocate: Could not deallocate cell%atom_frac_pos")
   end if
-    
+
   if (allocated(cell%atom_cart_pos)) then
     deallocate(cell%atom_cart_pos, stat=istat)
     if (istat .ne. 0) call io_err("cell_deallocate: Could not deallocate cell%atom_cart_pos")
   end if
-    
+
   if (allocated(cell%atom_species)) then
     deallocate(cell%atom_species, stat=istat)
     if (istat .ne. 0) call io_err("cell_deallocate: Could not deallocate cell%atom_species")
@@ -663,7 +663,7 @@ end subroutine cell_copy
 ! DESCRIPTION                                                                  !
 !   Sets the lattice vectors, allocates the cell and stores the atomic species !
 !   and atomic positions (in fractional space) based on the contents of the    !
-!   input hash table.                                                          !                                                         
+!   input hash table.                                                          !
 !==============================================================================!
 subroutine cell_read_input(cell)
   use io, only: max_line_len, io_input_get_data, io_str_get_num_tokens, io_str_get_token, io_str_to_real, &
@@ -1048,7 +1048,7 @@ subroutine cell_min_img_vec(cell, ri, rj, rij_out, distance, space)
         end if
       end if
     end do
-    
+
     currentdist = smallestdist
     fij(:) = fij(:) + real(min_img_c_vectors(:,cmin),dp)  ! use the minimum c_vector
   end if
@@ -1059,7 +1059,7 @@ subroutine cell_min_img_vec(cell, ri, rj, rij_out, distance, space)
     case ('frac')
       rij_out = fij
   end select
-  
+
   if (present(distance)) distance = sqrt(currentdist)
 end subroutine cell_min_img_vec
 

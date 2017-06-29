@@ -120,7 +120,7 @@ subroutine eam_potential(cell, potential)
   integer       ::  iatom, jatom, ispecies, jspecies
 
   ! possibly inefficient method - we don't take into account symmetric matrices etc - might be doing unnecessary work
-  potential = 0.0_dp 
+  potential = 0.0_dp
 
   !$omp parallel do default(none), schedule(static), &
   !$omp & private(iatom, jatom, rho_bar, ispecies, jspecies, rij_mag), shared(rij_vec, cell), reduction(+:potential)
@@ -138,7 +138,7 @@ subroutine eam_potential(cell, potential)
         ! scale magnitude: length from Bohr to Angstroms
         rij_mag = units_atomic_to_natural(length=rij_mag)
 
-        ! densities: 
+        ! densities:
         rho_bar = rho_bar + eam_rho(rij_mag, jspecies)
 
         ! pairwise potential energy contributions:
@@ -168,7 +168,7 @@ subroutine eam_forces(cell, force, potential)
 
   ! Merge potential and force calculations for efficiency:
   ! (inefficient method - we don't take into account symmetric matrices etc - might be doing unnecessary work)
-  potential = 0.0_dp 
+  potential = 0.0_dp
   force(:,:) = 0.0_dp
 
   !$omp parallel default(none), &
@@ -202,7 +202,7 @@ subroutine eam_forces(cell, force, potential)
     d_f_rb(iatom) = eam_d_f(rho_bar, ispecies)
 
     ! density dependent potential energy contribution:
-    potential = potential + eam_f(rho_bar, ispecies) 
+    potential = potential + eam_f(rho_bar, ispecies)
   end do !iatom
   !$omp end do
 
@@ -538,7 +538,7 @@ function eam_rho_h(rij)
 end function eam_rho_h
 
 function eam_d_rho_h(rij)
-  use constants,  only: pi, units_atomic_to_natural 
+  use constants,  only: pi, units_atomic_to_natural
   implicit none
   real(kind=dp),  intent(in)  ::  rij
   real(kind=dp)               ::  eam_d_rho_h
@@ -666,7 +666,7 @@ function eam_r_shell_ni(rij, i, shelltype)
       n_i = (i+1)/2
 
       eam_r_shell_ni = ((2.0_dp*zeta_s(i))**(real(n_i,dp)+0.5_dp))*(rij**(n_i-1))*(algor_exp(-zeta_s(i)*rij)) &
-      & / sqrt_factorial_2ni(n_i) 
+      & / sqrt_factorial_2ni(n_i)
     case ('d')
       ! again, don't check i - assume everything is okay
       ! n_i = 3 ! always

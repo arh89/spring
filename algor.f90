@@ -74,7 +74,7 @@ subroutine algor_init_rand(seed)
 
     ! pass string to hash function and return an integer... set this integer to be the seed
     rand_seed(i) = hash_function(str)
-  end do 
+  end do
 
   rand_initialized = .true.
 end subroutine algor_init_rand
@@ -192,7 +192,7 @@ function algor_gauss_rand(mean, stddev)
     !if (present(stddev) .or. present(mean)) - ie: only one argument
     call io_err("algor_gauss_rand: Missing an argument")
   end if
-   
+
   if (stored) then
     ! use the results from last time
     ! rescale/shift for new stddev and mean
@@ -225,7 +225,7 @@ end function algor_gauss_rand
 function algor_cross_product(a,b)
   implicit none
   real(kind=dp),  dimension(3), intent(in)  ::  a, b
-  real(kind=dp),  dimension(3)              ::  algor_cross_product 
+  real(kind=dp),  dimension(3)              ::  algor_cross_product
 
   algor_cross_product(1) = a(2)*b(3)-b(2)*a(3)
   algor_cross_product(2) = b(1)*a(3)-a(1)*b(3)
@@ -331,6 +331,7 @@ function algor_3d_rotation(vector, angles)
 end function algor_3d_rotation
 
 function algor_exp(x)
+  implicit none
   real(kind=dp) , intent(in)  ::  x
   real(kind=dp)               ::  algor_exp
 
@@ -342,7 +343,7 @@ function algor_exp(x)
 end function algor_exp
 
 subroutine algor_calc_inverse_real(array)
-	use io, only: io_err
+  use io, only: io_err
   implicit none
   real(kind=dp),  dimension(:,:), intent(inout) ::  array
 

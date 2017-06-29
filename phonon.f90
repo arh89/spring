@@ -15,7 +15,7 @@ module phonon
 
 
   type, public  ::  phonon_type
-    ! public interface variables 
+    ! public interface variables
     integer,      dimension(3)  ::  supercell_size
     real(kind=dp)               ::  dx                  ! perturbation size
     real(kind=dp)               ::  qpoint_path_spacing
@@ -42,7 +42,7 @@ module phonon
     real(kind=dp),    allocatable,  dimension(:,:,:,:,:)  ::  force_const_matrix
     complex(kind=dp), allocatable,  dimension(:,:,:,:)    ::  dynamical_matrix
     complex(kind=dp), allocatable,  dimension(:,:)        ::  packed_dynamical_matrix
-    
+
     real(kind=dp),    allocatable,  dimension(:)          ::  frequencies
 
     ! qpoint variables
@@ -200,7 +200,7 @@ subroutine phonon_init(phonon, cell)
   ! convert to 1/Ang to 1/Bohr..
   one_ang_in_bohr = units_natural_to_atomic(length=1.0_dp)
   phonon%qpoint_path_spacing = phonon%qpoint_path_spacing/one_ang_in_bohr
-  
+
   ! number of unit cells..
   phonon%ncells = phonon%supercell_size(1)*phonon%supercell_size(2)*phonon%supercell_size(3)
 
@@ -405,7 +405,7 @@ subroutine phonon_perturb_atom(phonon, iatom, direction)
   call cell_cart_to_frac(phonon%calc_cell)
   call cell_shift_to_unit_cell(phonon%calc_cell)
   call cell_frac_to_cart(phonon%calc_cell)
-       
+
   ! dforce = (f(y+u) - f(y-u)) / 2u
   phonon%packed_dforce(:,:) = 0.5_dp*(phonon%packed_dforce(:,:))/phonon%dx
 end subroutine phonon_perturb_atom
@@ -574,10 +574,10 @@ subroutine phonon_define_qpoints_path(phonon)
     total_npts = total_npts + npts
   end do
 
-  ! now we can allocate to correct number of points 
+  ! now we can allocate to correct number of points
   allocate(phonon%qpoints(3,total_npts), stat=istat)
   if (istat .ne. 0) call io_err("phonon_define_qpoint_path: Could not allocate phonon%qpoints array")
- 
+
   ! now need to set up the qpoints
   ipt = 0
   jstart = 0
@@ -679,7 +679,7 @@ subroutine do_phonon_calculation(phonon, cell)
   do ipoint = 1, size(phonon%qpoints,2)
     call phonon_calc_dynamical_matrix(phonon, cell, phonon%qpoints(:,ipoint))
     call phonon_diagonalize_dynamical_matrix(phonon, cell)
-!    do i = 1, size(phonon%packed_dynamical_matrix,1) 
+!    do i = 1, size(phonon%packed_dynamical_matrix,1)
 !      do j = 1, size(phonon%packed_dynamical_matrix,2)
 !        print *, phonon%packed_dynamical_matrix(i,j)-conjg(phonon%packed_dynamical_matrix(j,i))
       !if ((phonon%packed_dynamical_matrix(i,j)-conjg(phonon%packed_dynamical_matrix(j,i))) .ne. (0.0_dp, 0.0_dp)) then
@@ -693,7 +693,7 @@ subroutine do_phonon_calculation(phonon, cell)
     write(stdout, *)
     write(stdout, *) 'frequencies**2'
     do ifreq = 1, size(phonon%frequencies,1)
-      write(stdout, *) phonon%frequencies(ifreq) 
+      write(stdout, *) phonon%frequencies(ifreq)
     end do
     write(stdout, *)
   end do

@@ -5,7 +5,7 @@ module geometry
   implicit none
 
   private
-  
+
   ! default geom opt parameters:
   integer,        parameter ::  default_max_iter = 100
   real(kind=dp),  parameter ::  default_tpsd_initial_lambda = 1.0E-05_dp
@@ -51,7 +51,7 @@ module geometry
     real(kind=dp)                   ::  tpsd_initial_lambda
     real(kind=dp),  dimension(3,3)  ::  ext_pressure_tensor
   end type geom_type
-  
+
   public  ::  geom_init
   public  ::  do_geom_opt
   public  ::  geom_deallocate
@@ -196,7 +196,7 @@ subroutine geom_read_input(geom)
 
   call io_input_get_single_value('geom_stress_tol', geom%stress_tol, default_stress_tol)
   if (geom%stress_tol .le. 0.0_dp) call io_err("geom_read_input: geom_stress_tol must be > 0.0")
-  
+
   call io_input_get_single_value('geom_max_disp', geom%max_disp,  default_max_disp)
   if (geom%max_disp .le. 0.0_dp) call io_err("geom_read_input: geom_max_disp must be > 0.0")
 
@@ -219,7 +219,7 @@ subroutine geom_read_input(geom)
       if (io_str_get_num_tokens(input_data(iline)) .ne. 3) &
         & call io_err("geom_read_input: "//trim(keyword)//" block must contain 3 values on each line")
 
-      read(input_data(iline), *, iostat=istat) geom%ext_pressure_tensor(iline, :)      
+      read(input_data(iline), *, iostat=istat) geom%ext_pressure_tensor(iline, :)
       if (istat .ne. 0) call io_err("geom_read_input: "//trim(keyword)//": Error reading line")
     end do
   end if
@@ -279,7 +279,7 @@ subroutine do_geom_opt(geom, cell)
   write(stdout,*) "  Default disp_tol   = ", units_atomic_to_natural(length=geom%disp_tol)    , "Ang"
   if(.not. geom%fix_cell) write(stdout,*) "  Default stress_tol = ", units_atomic_to_natural(pressure=geom%stress_tol), "GPa"
 
-  
+
   call geom_build_f_vec(geom, cell)
   ! geom%atom_forces are not in cartesian space at this point
 
@@ -307,13 +307,13 @@ if(.not. geom%fix_cell) write(stdout,*)"  Initial max_stress =",units_atomic_to_
     write(stdout,*)
     write(stdout,*) "Beginning TPSD iteration", iter
 
-    ! X_(i+1) = X_i + lambda*H_i*F_i 
+    ! X_(i+1) = X_i + lambda*H_i*F_i
     geom%x_vec = geom%x_vec + geom%lambda*matmul(geom%inv_hessian, geom%f_vec)
 
     ! with new positions, can now update everything else
     call geom_x_vec_to_cell(geom, cell)
     ! geom_x_vec_to_cell also updates geom%strain_tensor..
-    
+
     ! should strain tensor be reinitialized to zero at every step?
 
     if (geom%fix_atoms) then
@@ -335,7 +335,7 @@ if(.not. geom%fix_cell) write(stdout,*)"  Initial max_stress =",units_atomic_to_
     ! get max abs(force) before we build new f_vec
     max_force = 0.0_dp
     do i = 1, cell%natoms
-      current_force_sq = dot_product(geom%atom_forces(:,i), geom%atom_forces(:,i)) 
+      current_force_sq = dot_product(geom%atom_forces(:,i), geom%atom_forces(:,i))
       if (current_force_sq .gt. max_force) max_force = current_force_sq
     end do
     max_force = sqrt(max_force)
@@ -405,11 +405,11 @@ if(.not. geom%fix_cell) write(stdout,*)"  Initial max_stress =",units_atomic_to_
       write(stdout,*)
       write(stdout,*) "====== Final cell ======"
       write(stdout,*) "begin lattice_vectors"
-      do i = 1, 3 
+      do i = 1, 3
         write(stdout,*) units_atomic_to_natural(length=cell%lattice_vectors(:,i))
       end do
       write(stdout,*) "end lattice_vectors"
-      write(stdout,*) 
+      write(stdout,*)
       write(stdout,*) "begin atomic_positions"
       do i = 1, cell%natoms
         write(stdout,*) element_symbol(cell%atom_species(i)), cell%atom_frac_pos(:,i)
@@ -445,7 +445,7 @@ subroutine geom_tpsd_calc_step_size(geom)
   type(geom_type),  intent(inout) ::  geom
 
   real(kind=dp) ::  dx_dot_dg, dg_dot_dg
-  
+
   ! TPSD:
   ! lambda = <delta_x, delta_g>/<delta_g, delta_g>
   ! (or lambda = <delta_x, delta_x>/<delta_x, delta_g>)
@@ -455,11 +455,11 @@ subroutine geom_tpsd_calc_step_size(geom)
 
   ! in Pfrommer this is: -(H_i*F_i - H_(i-1)*F_(i-1)) because we multiply by H
   ! if H_i = H_(i-1) = H_0     =>     delta_g = -H_0*( F_i - F_(i-1) )
-  
+
   ! use geom%delta_vec as a work array..
   geom%delta_vec = geom%f_vec - geom%f_vec_old
   geom%delta_vec = -matmul(geom%inv_hessian, geom%delta_vec)
-  
+
   dx_dot_dg = dot_product((geom%x_vec - geom%x_vec_old), geom%delta_vec)
   dg_dot_dg = dot_product(geom%delta_vec, geom%delta_vec)
 

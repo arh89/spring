@@ -44,7 +44,7 @@ module hash_tables
   real,     parameter ::  expand_scale    = 2.00
   real,     parameter ::  shrink_scale    = 1.0/expand_scale
   logical,  parameter ::  enable_cache = .true.
-  
+
   ! Will need lists of these for collision management
   type :: hash_element
     integer                                           ::  hash_id
@@ -120,7 +120,7 @@ contains
 !   logical,  optional, intent(in)    ::  can_shrink                           !
 !------------------------------------------------------------------------------!
 ! NOTES                                                                        !
-!   Table should not already be initialized.                                   ! 
+!   Table should not already be initialized.                                   !
 !                                                                              !
 !   If nbuckets is present and <1, then we do not give an error but instead    !
 !   allocate the default number.                                               !
@@ -507,7 +507,7 @@ subroutine hash_table_get_block(table, keyword, block)
   ! local vars
   type(hash_element), pointer ::  ptr
   integer ::  hash_id, bucket_id
-  
+
   if (.not. table%initialized) stop 'Error in hash_table_get_block: table not initialized'
 
   call hash_table_find_element(table, keyword, hash_id, bucket_id, ptr)
@@ -673,7 +673,7 @@ subroutine hash_table_get_keywords(table, keywords)
         do
           keywords(ikeyword) = ptr%keyword
           ikeyword = ikeyword + 1
-        
+
           if (.not. associated(ptr%next_element)) exit
           ptr => ptr%next_element
         end do
@@ -848,7 +848,7 @@ subroutine hash_table_list(table, unit_num)
 
         if (allocated(ptr%block)) then
           do iblock = 1, size(ptr%block,1)
-            if (iblock .eq. 1) then 
+            if (iblock .eq. 1) then
               write(out_unit, "('|', T7, 'block    : ', A100, T120, '|')") ptr%block(iblock)
             else
               write(out_unit, "('|', T18, A100, T120, '|')") ptr%block(iblock)
@@ -1002,7 +1002,7 @@ subroutine hash_table_find_element(table, keyword, hash_id, bucket_id, ptr)
 
       ! start at head of bucket (must be associated)
       ptr => table%buckets(bucket_id)%head
-      
+
       ! go through list until we have matching keyword or reach end
       do
         if (ptr%keyword .eq. keyword) then

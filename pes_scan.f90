@@ -1,21 +1,21 @@
 module pes_scan
-  ! Can either: 
+  ! Can either:
   !     * Raster along a surface that is in the a,b plane to get minimum energy and corresponding height along c
   !     * Raster along a line across the a,b plane to get minimum energy and corresponding height along c
   !     * Get minimum energy and corresponding height along c at a point on the a,b plane
 
   use constants,  only: dp
   implicit none
-  
+
   private
 
   ! TSPD parameters (for opt of z coord)
   integer,          parameter ::  default_max_iter = 100
   real(kind=dp),    parameter ::  default_initial_alpha = 1.0E-05_dp
   real(kind=dp),    parameter ::  default_max_disp  = 5.0E-1_dp       ! Ang
-  real(kind=dp),    parameter ::  default_force_tol = 1.0E-5_dp       ! eV/Ang 
+  real(kind=dp),    parameter ::  default_force_tol = 1.0E-5_dp       ! eV/Ang
   real(kind=dp),    parameter ::  default_energy_tol = 1.0E-8_dp      ! eV
-  real(kind=dp),    parameter ::  default_disp_tol = 1.0E-3_dp        ! Ang 
+  real(kind=dp),    parameter ::  default_disp_tol = 1.0E-3_dp        ! Ang
 
   ! line scan parameters:
   real(kind=dp),    parameter ::  default_ls_height = 3.0_dp          ! Ang
@@ -54,7 +54,7 @@ module pes_scan
 contains
 
 subroutine pes_scan_init(pes, cell)
-  use cell,       only: cell_type, cell_reallocate, cell_shift_to_unit_cell, cell_frac_to_cart, cell_supercell 
+  use cell,       only: cell_type, cell_reallocate, cell_shift_to_unit_cell, cell_frac_to_cart, cell_supercell
   use io,         only: io_input_get_single_value, max_line_len, io_input_get_data, io_str_get_num_tokens, &
                       & io_str_get_token, io_str_to_real, io_str_to_int, io_err
   use constants,  only: element_symbol_to_z, units_natural_to_atomic, element_mass
@@ -303,7 +303,7 @@ subroutine do_pes_scan(pes, cell)
       select case (pes%opt_method)
         case ('tpsd')
           call pes_tpsd_line_minimise(pes, cell, forces, energy, num_iters)
-      
+
           ! write final iter to file
           write(pes%file_unit, *, iostat=istat) cell%atom_frac_pos(:,pes%probe_id), units_atomic_to_natural(energy=energy), &
           & units_atomic_to_natural(force=forces(:,pes%probe_id)), num_iters, '<-- final'

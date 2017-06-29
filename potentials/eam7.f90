@@ -1,4 +1,4 @@
-module potential 
+module potential
   ! EAM 7
   use algor
   use constants,  only: dp
@@ -597,7 +597,7 @@ function eam_f_h(rho_bar, rho_hat_1, rho_hat_2)
     ! non-local term:
     rho_hat(:) = (/ rho_hat_1, rho_hat_2 /)
     do k = 1,2
-      eam_f_h = eam_f_h + xi(1,k)*sech(xi(2,k)*(rho_hat(k)-xi(3,k))) 
+      eam_f_h = eam_f_h + xi(1,k)*sech(xi(2,k)*(rho_hat(k)-xi(3,k)))
     end do
   end if
 end function eam_f_h
@@ -655,7 +655,7 @@ function eam_d_f_h(rho_bar_or_hat, derivative)
     case default
       call io_err("Error in potential - eam_d_f_h: Unexpected derivative")
   end select
-  
+
   ! non-local term:
   if (k .ne. 0) then
     if (non_local_correction) then
@@ -714,7 +714,7 @@ function eam_rho_h(rij)
 end function eam_rho_h
 
 function eam_d_rho_h(rij)
-  use constants,  only: pi, units_atomic_to_natural 
+  use constants,  only: pi, units_atomic_to_natural
   implicit none
   real(kind=dp),  intent(in)  ::  rij
   real(kind=dp)               ::  eam_d_rho_h
@@ -843,7 +843,7 @@ function eam_r_shell_ni(rij, i, shelltype)
       n_i = (i+1)/2
 
       eam_r_shell_ni = ((2.0_dp*zeta_s(i))**(real(n_i,dp)+0.5_dp))*(rij**(n_i-1))*(algor_exp(-zeta_s(i)*rij)) &
-      & / sqrt_factorial_2ni(n_i) 
+      & / sqrt_factorial_2ni(n_i)
     case ('d')
       ! again, don't check i - assume everything is okay
       !n_i = 3 ! always
